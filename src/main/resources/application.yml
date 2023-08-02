@@ -1,0 +1,40 @@
+server:
+  port: 8084
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: localhost
+  command:
+    fallback:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        -   id: users
+            uri: lb://USER-SERVICE/users
+            predicates:
+              - Path=/users/**
+        -   id: traindetails
+            uri: lb://TRAIN-SERVICE/traindetails
+            predicates:
+              - Path=/traindetails/**
+        -   id: /bookingdetails
+            uri: lb://BOOKINGDETAILSSERVICE/bookingdetails
+            predicates:
+              - Path=/bookingdetails/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
